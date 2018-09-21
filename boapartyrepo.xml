@@ -3,18 +3,18 @@
     <boaparties partyName="newParty">
         <properties/>
         <biddingStrategy>
-            <item classpath="negotiator.boaframework.offeringstrategy.anac2012.CUHKAgent_Offering"/>
+            <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
         </biddingStrategy>
         <acceptanceStrategy>
-            <parameters name="b" value="0.0"/>
-            <parameters name="a" value="1.0"/>
+            <parameters name="a" value="0.8"/>
+            <parameters name="t" value="0.05"/>
             <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
         </acceptanceStrategy>
         <opponentModel>
-            <item classpath="negotiator.boaframework.opponentmodel.CUHKFrequencyModelV2"/>
+            <item classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
         </opponentModel>
         <omStrategy>
-            <item classpath="negotiator.boaframework.omstrategy.TheFawkes_OMS"/>
+            <item classpath="negotiator.boaframework.omstrategy.NTFTstrategy"/>
         </omStrategy>
     </boaparties>
     <boaparties partyName="newParty1">
@@ -23,8 +23,25 @@
             <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
         </biddingStrategy>
         <acceptanceStrategy>
-            <parameters name="b" value="0.0"/>
-            <parameters name="a" value="1.0"/>
+            <parameters name="a" value="0.8"/>
+            <parameters name="t" value="0.95"/>
+            <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
+        </acceptanceStrategy>
+        <opponentModel>
+            <item classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
+        </opponentModel>
+        <omStrategy>
+            <item classpath="negotiator.boaframework.omstrategy.NTFTstrategy"/>
+        </omStrategy>
+    </boaparties>
+    <boaparties partyName="newParty2_ac_next">
+        <properties/>
+        <biddingStrategy>
+            <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
+        </biddingStrategy>
+        <acceptanceStrategy>
+            <parameters name="a" value="0.8"/>
+            <parameters name="t" value="0.05"/>
             <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
         </acceptanceStrategy>
         <opponentModel>

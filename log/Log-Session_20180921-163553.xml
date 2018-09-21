@@ -1,0 +1,7 @@
+<?xml version="1.0" ?><Session>
+<NegotiationOutcome currentTime="Fri Sep 21 16:35:55 CEST 2018" lastAction="(Offer  bid:Bid[Food: Catering])" domain="etc/templates/partydomain/party_domain.xml" bids="360" runtime="1.209319957" finalOutcome="-" startingAgent="boa-negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering-.Users.mango.Documents.18fall.TUD.EEMCS.AI.projects.ai2018.bin.ai2018.group9.Group9_AS_t_a-negotiator.boaframework.opponentmodel.AgentLGModel-negotiator.boaframework.omstrategy.NTFTstrategy@6" deadline="180rounds">
+<resultsOfAgent agent="boa-negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering-.Users.mango.Documents.18fall.TUD.EEMCS.AI.projects.ai2018.bin.ai2018.group9.Group9_AS_t_a-negotiator.boaframework.opponentmodel.AgentLGModel-negotiator.boaframework.omstrategy.NTFTstrategy@6" agentDesc="BOA(Group9_AS example,2010 - AgentK,AgentLG Model,NTFT)" utilspace="etc/templates/partydomain/party1_utility.xml" agentClass="genius.core.boaframework.BoaParty" finalUtility="0.0" discountedUtility="0.0" discount="1.0">
+</resultsOfAgent>
+<resultsOfAgent agent="OptimalBidderSimple@7" agentDesc="using the optimal stopping rule (cutoffs) for bidding" utilspace="etc/templates/partydomain/party2_utility.xml" agentClass="agents.OptimalBidderSimple" finalUtility="0.0" discountedUtility="0.0" discount="1.0">
+</resultsOfAgent>
+</NegotiationOutcome></Session>

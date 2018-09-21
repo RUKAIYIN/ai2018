@@ -15,9 +15,7 @@ import genius.core.boaframework.OpponentModel;
 
 public class Group9_AS extends AcceptanceStrategy {
 
-	private double a;
-	private double b;
-	private List<Double> oppoBidHistory;
+	private double a; //a user-defined constant which is our utilityThreshold
 
 	/**
 	 * Empty constructor for the BOA framework.
@@ -25,46 +23,55 @@ public class Group9_AS extends AcceptanceStrategy {
 	public Group9_AS() {
 	}
 
-	public Group9_AS(NegotiationSession negoSession, OfferingStrategy strat, double alpha, double beta) {
+	/**
+	 * constructor for the BOA framework
+	 * 
+	 * @param negoSession
+	 * @param strat
+	 * @param alpha
+	 */
+	public Group9_AS(NegotiationSession negoSession, OfferingStrategy strat, double alpha) {
 		this.negotiationSession = negoSession;
 		this.offeringStrategy = strat;
 		this.a = alpha;
-		this.b = beta;
-		this.oppoBidHistory = new ArrayList<Double>();
 	}
 
+	/**
+	 * Initialization for the BOA framework
+	 * 
+	 * @param negoSession
+	 * @param strat
+	 * @param opponentModel
+	 * @param parameters
+	 * @throws Exception
+	 */
 	@Override
 	public void init(NegotiationSession negoSession, OfferingStrategy strat, OpponentModel opponentModel,
 			Map<String, Double> parameters) throws Exception {
 		this.negotiationSession = negoSession;
 		this.offeringStrategy = strat;
 
-		if (parameters.get("a") != null || parameters.get("b") != null) {
+		if (parameters.get("a") != null) {
 			a = parameters.get("a");
-			b = parameters.get("b");
 		} else {
-			a = 1;
-			b = 0;
+			a = 0.8;
 		}
 	}
 
 	@Override
 	public String printParameters() {
-		String str = "[a: " + a + " b: " + b + "]";
+		String str = "[a: " + a + "]";
 		return str;
 	}
 
 	@Override
 	public Actions determineAcceptability() {
-		double nextMyBidUtil = offeringStrategy.getNextBid().getMyUndiscountedUtil();
 		double lastOpponentBidUtil = negotiationSession.getOpponentBidHistory().getLastBidDetails()
 				.getMyUndiscountedUtil();
+		double timeLeft = 1 - negotiationSession.getTime(); //ranges [0, 1]
 
-		double timeLeft = 1 - negotiationSession.getTime();
-		double utilityThreshold = 0.8;
-
-		// Accept if our utility is above 0.8 or above the square root of time left 
-		if (lastOpponentBidUtil >= Math.min(utilityThreshold, Math.sqrt(timeLeft))) {
+		// Accept if our utility is above a or above the square root of time left 
+		if (lastOpponentBidUtil >= Math.min(a, Math.sqrt(timeLeft))) {
 			return Actions.Accept;
 		}
 
@@ -76,9 +83,7 @@ public class Group9_AS extends AcceptanceStrategy {
 
 		Set<BOAparameter> set = new HashSet<BOAparameter>();
 		set.add(new BOAparameter("a", 1.0,
-				"Accept when the opponent's utility * a + b is greater than the utility of our current bid"));
-		set.add(new BOAparameter("b", 0.0,
-				"Accept when the opponent's utility * a + b is greater than the utility of our current bid"));
+				"Accept if our utility is above a or above the square root of time left "));
 
 		return set;
 	}
