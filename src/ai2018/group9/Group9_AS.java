@@ -82,7 +82,7 @@ public class Group9_AS extends AcceptanceStrategy {
 	public Set<BOAparameter> getParameterSpec() {
 
 		Set<BOAparameter> set = new HashSet<BOAparameter>();
-		set.add(new BOAparameter("a", 1.0,
+		set.add(new BOAparameter("a", 0.8,
 				"Accept if our utility is above a or above the square root of time left "));
 
 		return set;
