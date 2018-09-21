@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<boaPartiesList>
+    <boaparties partyName="newParty">
+        <properties/>
+        <biddingStrategy>
+            <item classpath="negotiator.boaframework.offeringstrategy.anac2012.CUHKAgent_Offering"/>
+        </biddingStrategy>
+        <acceptanceStrategy>
+            <parameters name="b" value="0.0"/>
+            <parameters name="a" value="1.0"/>
+            <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
+        </acceptanceStrategy>
+        <opponentModel>
+            <item classpath="negotiator.boaframework.opponentmodel.CUHKFrequencyModelV2"/>
+        </opponentModel>
+        <omStrategy>
+            <item classpath="negotiator.boaframework.omstrategy.TheFawkes_OMS"/>
+        </omStrategy>
+    </boaparties>
+    <boaparties partyName="newParty1">
+        <properties/>
+        <biddingStrategy>
+            <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
+        </biddingStrategy>
+        <acceptanceStrategy>
+            <parameters name="b" value="0.0"/>
+            <parameters name="a" value="1.0"/>
+            <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
+        </acceptanceStrategy>
+        <opponentModel>
+            <item classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
+        </opponentModel>
+        <omStrategy>
+            <item classpath="negotiator.boaframework.omstrategy.NTFTstrategy"/>
+        </omStrategy>
+    </boaparties>
+</boaPartiesList>

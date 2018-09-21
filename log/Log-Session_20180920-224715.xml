@@ -1,0 +1,7 @@
+<?xml version="1.0" ?><Session>
+<NegotiationOutcome currentTime="Thu Sep 20 22:47:15 CEST 2018" timeOfAgreement="0.9006622516556292" lastAction="(Accept  bid:Bid[Pie: a547])" domain="etc/templates/pie/pie_domain.xml" bids="270" runtime="0.398199253" finalOutcome="Bid[Pie: a547]" startingAgent="RandomParty@0" deadline="150rounds">
+<resultsOfAgent agent="RandomParty@0" agentDesc="Place random bids until 90% of time" utilspace="etc/templates/pie/pie_A.xml" agentClass="negotiator.parties.RandomParty" finalUtility="0.547" discountedUtility="0.547" discount="1.0">
+</resultsOfAgent>
+<resultsOfAgent agent="RandomParty2@1" agentDesc="Place random bids until 90% of time" utilspace="etc/templates/pie/pie_B.xml" agentClass="negotiator.parties.RandomParty2" finalUtility="0.453" discountedUtility="0.453" discount="1.0">
+</resultsOfAgent>
+</NegotiationOutcome></Session>
