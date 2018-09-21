@@ -60,9 +60,14 @@ public class Group9_AS extends AcceptanceStrategy {
 		double lastOpponentBidUtil = negotiationSession.getOpponentBidHistory().getLastBidDetails()
 				.getMyUndiscountedUtil();
 
-		if (a * lastOpponentBidUtil + b >= nextMyBidUtil) {
+		double timeLeft = 1 - negotiationSession.getTime();
+		double utilityThreshold = 0.8;
+
+		// Accept if our utility is above 0.8 or above the square root of time left 
+		if (lastOpponentBidUtil >= Math.min(utilityThreshold, Math.sqrt(timeLeft))) {
 			return Actions.Accept;
 		}
+
 		return Actions.Reject;
 	}
 
