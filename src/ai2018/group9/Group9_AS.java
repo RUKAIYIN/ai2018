@@ -88,6 +88,6 @@ public class Group9_AS extends AcceptanceStrategy {
 
 	@Override
 	public String getName() {
-		return "Group9_AS example";
+		return "Group9 Acceptance Strategy";
 	}
 }
