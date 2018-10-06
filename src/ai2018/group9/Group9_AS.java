@@ -69,7 +69,7 @@ public class Group9_AS extends AcceptanceStrategy {
 		double timeLeft = 1 - negotiationSession.getTime(); //ranges [0, 1]
 
 		// Accept if our utility is above a or above the square root of time left 
-		if (lastOpponentBidUtil >= Math.min(a, Math.sqrt(timeLeft))) {
+		if (lastOpponentBidUtil >= Math.min(a,Math.pow(timeLeft,0.1))) {
 			return Actions.Accept;
 		}
 
