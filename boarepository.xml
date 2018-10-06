@@ -3,6 +3,7 @@
 	<biddingstrategies>
 		<biddingstrategy description="2010 - Agent K" classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
 		<biddingstrategy description="2010 - Yushu" classpath="negotiator.boaframework.offeringstrategy.anac2010.Yushu_Offering"/>
+		<biddingstrategy description="Group9_BS.class" classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_BS.class"/>
 		<biddingstrategy description="2012 - AgentLG" classpath="negotiator.boaframework.offeringstrategy.anac2012.AgentLG_Offering"/>
 		<biddingstrategy description="2012 - BRAMAgent2" classpath="negotiator.boaframework.offeringstrategy.anac2012.BRAMAgent2_Offering"/>
 		<biddingstrategy description="2012 - The Negotiator Reloaded" classpath="negotiator.boaframework.offeringstrategy.anac2012.TheNegotiatorReloaded_Offering"/>
