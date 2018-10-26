@@ -1,4 +1,4 @@
-package boaexample;
+package ai2018.group9;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +27,7 @@ import genius.core.utility.EvaluatorDiscrete;
  * 
  * paper: https://ii.tudelft.nl/sites/default/files/boa.pdf
  */
-public class HardHeadedFrequencyModel extends OpponentModel {
+public class Group9_OM extends OpponentModel {
 
 	/*
 	 * the learning coefficient is the weight that is added each turn to the
@@ -42,10 +42,10 @@ public class HardHeadedFrequencyModel extends OpponentModel {
 	private int learnValueAddition;
 	private int amountOfIssues;
 	private double goldenValue;
+	private int bidsToCheck = 5;
 
 	@Override
-	public void init(NegotiationSession negotiationSession,
-			Map<String, Double> parameters) {
+	public void init(NegotiationSession negotiationSession, Map<String, Double> parameters) {
 		this.negotiationSession = negotiationSession;
 		if (parameters != null && parameters.get("l") != null) {
 			learnCoef = parameters.get("l");
@@ -79,16 +79,31 @@ public class HardHeadedFrequencyModel extends OpponentModel {
 		BidDetails prevOppBid = negotiationSession.getOpponentBidHistory()
 				.getHistory()
 				.get(negotiationSession.getOpponentBidHistory().size() - 2);
-		HashMap<Integer, Integer> lastDiffSet = determineDifference(prevOppBid,
-				oppBid);
+		HashMap<Integer, Integer> lastDiffSet = determineDifference(prevOppBid,	oppBid);
+
+		// Get the last x bids the opponent made
+		BidDetails[] lastBids = getLastBids(bidsToCheck);
+		// Count how many distinct values have been bid for each issue in the last x bids
+		HashMap<Integer, Integer> distinctBidsPerIssue = CountValues(lastBids);
+		// HashMap to calculate how much to increment each issue according to last x bids
+		HashMap<Integer, Double> addToIssue = new HashMap<Integer, Double>();
+
+		double timeLeft = 1.0 - time;
 
 		// count the number of changes in value
 		for (Integer i : lastDiffSet.keySet()) {
-			if (lastDiffSet.get(i) == 0)
+			if (lastDiffSet.get(i) == 0) {
 				numberOfUnchanged++;
+				// Issue unchanged, we don't want to increment more
+				addToIssue.put(i, 0.0);
+			} else if(lastDiffSet.get(i) != 0) {
+				// Issue i should be incremented by a value according to num distinct bids in last x bids
+				// Also have time factor since more importance is in the beginning
+				addToIssue.put(i, (1.0 - (double)(distinctBidsPerIssue.get(i))/amountOfIssues)*timeLeft);
+			}
 		}
 
-		double timeLeft = 1.0 - time;
+		//Put more importance on the changes in the beginning, so multiply with timeleft
 		double addValue = goldenValue*timeLeft;
 
 		// The total sum of weights before normalization.
@@ -104,7 +119,7 @@ public class HardHeadedFrequencyModel extends OpponentModel {
 			double newWeight;
 
 			if (lastDiffSet.get(i) == 0 && weight < maximumWeight) {
-				newWeight = (weight + addValue) / totalSum;
+				newWeight = (weight + addValue + addValue*addToIssue.get(i)) / totalSum;
 			} else {
 				newWeight = weight / totalSum;
 			}
@@ -132,6 +147,40 @@ public class HardHeadedFrequencyModel extends OpponentModel {
 		}
 	}
 
+	// Get last x bids opponent made
+	public BidDetails[]  getLastBids(Integer x) {
+		BidDetails[] bidDetails = new BidDetails[x];
+		int bidSize = negotiationSession.getOpponentBidHistory().size();
+		if(bidSize < x + 1) {
+			return new BidDetails[0];
+		}
+		for(int counter = 0; counter < x; counter++) {
+			BidDetails bidDetail = negotiationSession.getOpponentBidHistory()
+				.getHistory().get(bidSize - 1 - counter);
+			bidDetails[counter] = bidDetail;
+		}
+		return bidDetails;
+	}
+
+	// Count number of distinct values per issue for each BidDetail
+	public HashMap<Integer, Integer> CountValues(BidDetails[] bidDetails) {
+
+		HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
+		try {	
+			for (Issue i : opponentUtilitySpace.getDomain().getIssues()) {
+				Set<String> issueSet = new HashSet<String>();
+				for(int counter = 0; counter < bidDetails.length; counter++) {
+					Value val = bidDetails[counter].getBid().getValue(i.getNumber());
+					issueSet.add(val.toString());
+				}
+				count.put(i.getNumber(), issueSet.size());
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return count;
+	}
+
 	@Override
 	public double getBidEvaluation(Bid bid) {
 		double result = 0;
@@ -145,7 +194,7 @@ public class HardHeadedFrequencyModel extends OpponentModel {
 
 	@Override
 	public String getName() {
-		return "HardHeaded Frequency Model With Time";
+		return "Group9 Opponent Model";
 	}
 
 	@Override

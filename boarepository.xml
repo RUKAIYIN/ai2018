@@ -3,7 +3,6 @@
 	<biddingstrategies>
 		<biddingstrategy description="2010 - Agent K" classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
 		<biddingstrategy description="2010 - Yushu" classpath="negotiator.boaframework.offeringstrategy.anac2010.Yushu_Offering"/>
-		<biddingstrategy description="Group9_BS.class" classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_BS.class"/>
 		<biddingstrategy description="2012 - AgentLG" classpath="negotiator.boaframework.offeringstrategy.anac2012.AgentLG_Offering"/>
 		<biddingstrategy description="2012 - BRAMAgent2" classpath="negotiator.boaframework.offeringstrategy.anac2012.BRAMAgent2_Offering"/>
 		<biddingstrategy description="2012 - The Negotiator Reloaded" classpath="negotiator.boaframework.offeringstrategy.anac2012.TheNegotiatorReloaded_Offering"/>
@@ -28,6 +27,7 @@
 		<biddingstrategy description="2012 - AgentMR" classpath="negotiator.boaframework.offeringstrategy.anac2012.AgentMR_Offering"/>
 		<biddingstrategy description="2012 - CUHKAgent" classpath="negotiator.boaframework.offeringstrategy.anac2012.CUHKAgent_Offering"/>
 		<biddingstrategy description="Other - Offer decreasing utility" classpath="negotiator.boaframework.offeringstrategy.other.ChoosingAllBids"/>
+		<biddingstrategy description="Group9_BS" classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_BS.class"/>
 		<biddingstrategy description="2013 - InoxAgent_OneIssue" classpath="negotiator.boaframework.offeringstrategy.anac2013.InoxAgent_Offering_OneIssue"/>
 		<biddingstrategy description="2012 - OMACagent" classpath="negotiator.boaframework.offeringstrategy.anac2012.OMACagent_Offering"/>
 		<biddingstrategy description="2011 - IAMHaggler2011" classpath="negotiator.boaframework.offeringstrategy.anac2011.IAMhaggler2011_Offering"/>
@@ -36,7 +36,6 @@
 	<acceptanceconditions>
 		<acceptancecondition description="2010 - Agent K" classpath="negotiator.boaframework.acceptanceconditions.anac2010.AC_AgentK"/>
 		<acceptancecondition description="2010 - Yushu" classpath="negotiator.boaframework.acceptanceconditions.anac2010.AC_Yushu"/>
-		<acceptancecondition description="Group9_AS.class" classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
 		<acceptancecondition description="2012 - AgentLG" classpath="negotiator.boaframework.acceptanceconditions.anac2012.AC_AgentLG"/>
 		<acceptancecondition description="2012 - BRAMAgent2" classpath="negotiator.boaframework.acceptanceconditions.anac2012.AC_BRAMAgent2"/>
 		<acceptancecondition description="2012 - The Negotiator Reloaded" classpath="negotiator.boaframework.acceptanceconditions.anac2012.AC_TheNegotiatorReloaded"/>
@@ -45,6 +44,7 @@
 		<acceptancecondition description="Other - Previous" classpath="negotiator.boaframework.acceptanceconditions.other.AC_Previous"/>
 		<acceptancecondition description="2012 - IAMHaggler2012" classpath="negotiator.boaframework.acceptanceconditions.anac2012.AC_IAMHaggler2012"/>
 		<acceptancecondition description="2011 - BRAMAgent" classpath="negotiator.boaframework.acceptanceconditions.anac2011.AC_BRAMAgent"/>
+		<acceptancecondition description="Group9_AS" classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_AS.class"/>
 		<acceptancecondition description="2011 - Nice-Tit-For-Tat" classpath="negotiator.boaframework.acceptanceconditions.anac2011.AC_NiceTitForTat"/>
 		<acceptancecondition description="2010 - Agent Smith" classpath="negotiator.boaframework.acceptanceconditions.anac2010.AC_AgentSmith"/>
 		<acceptancecondition description="Other - CombiMaxInWindow" classpath="negotiator.boaframework.acceptanceconditions.other.AC_CombiMaxInWindow"/>
@@ -76,7 +76,9 @@
 	<opponentmodels>
 		<opponentmodel description="AgentLG Model" classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
 		<opponentmodel description="Perfect Model" classpath="negotiator.boaframework.opponentmodel.PerfectModel"/>
+		<opponentmodel description="Group9_OM.class" classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_OM.class"/>
 		<opponentmodel description="The Negotiator Reloaded Model" classpath="negotiator.boaframework.opponentmodel.IAMhagglerBayesianModel"/>
+		<opponentmodel description="Group9_OM" classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_OM.class"/>
 		<opponentmodel description="InoxAgent_OM" classpath="negotiator.boaframework.opponentmodel.InoxAgent_OM"/>
 		<opponentmodel description="FSEGA Bayesian Model" classpath="negotiator.boaframework.opponentmodel.FSEGABayesianModel"/>
 		<opponentmodel description="Perfect IAMhaggler Bay. Model" classpath="negotiator.boaframework.opponentmodel.PerfectIAMhagglerBayesianModel"/>

@@ -3,52 +3,23 @@
     <boaparties partyName="newParty">
         <properties/>
         <biddingStrategy>
-            <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
+            <parameters name="min" value="0.8"/>
+            <parameters name="max" value="1.0"/>
+            <parameters name="e" value="0.5"/>
+            <parameters name="n" value="3.0"/>
+            <item classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_BS.class"/>
         </biddingStrategy>
         <acceptanceStrategy>
             <parameters name="a" value="0.8"/>
-            <parameters name="t" value="0.05"/>
-            <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
+            <item classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_AS.class"/>
         </acceptanceStrategy>
         <opponentModel>
-            <item classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
+            <parameters name="l" value="0.2"/>
+            <item classpath="/home/tomas/Documents/TUDelft/AI/Group9/ai2018/src/ai2018/group9/Group9_OM.class"/>
         </opponentModel>
         <omStrategy>
-            <item classpath="negotiator.boaframework.omstrategy.NTFTstrategy"/>
-        </omStrategy>
-    </boaparties>
-    <boaparties partyName="newParty1">
-        <properties/>
-        <biddingStrategy>
-            <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
-        </biddingStrategy>
-        <acceptanceStrategy>
-            <parameters name="a" value="0.8"/>
-            <parameters name="t" value="0.95"/>
-            <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
-        </acceptanceStrategy>
-        <opponentModel>
-            <item classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
-        </opponentModel>
-        <omStrategy>
-            <item classpath="negotiator.boaframework.omstrategy.NTFTstrategy"/>
-        </omStrategy>
-    </boaparties>
-    <boaparties partyName="newParty2_ac_next">
-        <properties/>
-        <biddingStrategy>
-            <item classpath="negotiator.boaframework.offeringstrategy.anac2010.AgentK_Offering"/>
-        </biddingStrategy>
-        <acceptanceStrategy>
-            <parameters name="a" value="0.8"/>
-            <parameters name="t" value="0.05"/>
-            <item classpath="/Users/mango/Documents/18fall-TUD/EEMCS/AI/projects/ai2018/bin/ai2018/group9/Group9_AS.class"/>
-        </acceptanceStrategy>
-        <opponentModel>
-            <item classpath="negotiator.boaframework.opponentmodel.AgentLGModel"/>
-        </opponentModel>
-        <omStrategy>
-            <item classpath="negotiator.boaframework.omstrategy.NTFTstrategy"/>
+            <parameters name="t" value="1.1"/>
+            <item classpath="negotiator.boaframework.omstrategy.BestBid"/>
         </omStrategy>
     </boaparties>
 </boaPartiesList>
