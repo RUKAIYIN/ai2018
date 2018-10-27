@@ -60,7 +60,7 @@ public class Group9_OMS extends OMStrategy {
 		if (null != parameters.get("w")) {
 			weightHammingDist = parameters.get("w").doubleValue();
 		} else {
-			weightHammingDist = 3;
+			weightHammingDist = 2;
 		}
 	}
 
@@ -83,10 +83,13 @@ public class Group9_OMS extends OMStrategy {
 		BidDetails bestBid = allBids.get(0);
 		
 		int amountOfIssues = model.getOpponentUtilitySpace().getDomain().getIssues().size();
-		BidDetails oppBid = negotiationSession.getOpponentBidHistory()
-							.getHistory()
-							.get(negotiationSession.getOpponentBidHistory().size() - 1);
+		BidDetails oppBid = null;
 		
+		if (negotiationSession.getOpponentBidHistory().size() > 0) {
+			oppBid = negotiationSession.getOpponentBidHistory()
+					.getHistory()
+					.get(negotiationSession.getOpponentBidHistory().size() - 1);
+		}
 		
 		// 2. Check that not all bids are assigned at utility of 0
 		// to ensure that the opponent model works. If the opponent model
@@ -96,9 +99,7 @@ public class Group9_OMS extends OMStrategy {
 		// 3. Determine the best bid
 		for (BidDetails bid : allBids) {
 			double evaluation = model.getBidEvaluation(bid.getBid());
-			double hammingDist = calcHammingDist(bid, oppBid, amountOfIssues);
-			double utility = (weightHammingDist * (1 -hammingDist) + evaluation)
-							/ (weightHammingDist + 1);
+			double utility = calcHammingDistUtil(bid, oppBid, amountOfIssues, evaluation);
 			
 			if (evaluation > 0.0001) {
 				allWereZero = false;
@@ -131,7 +132,7 @@ public class Group9_OMS extends OMStrategy {
 	public Set<BOAparameter> getParameterSpec() {
 		Set<BOAparameter> set = new HashSet<BOAparameter>();
 		set.add(new BOAparameter("t", 1.1, "Time after which the OM should not be updated"));
-		set.add(new BOAparameter("w", 3.0, "Weight of Hamming Distance in deciding the best bid"));
+		set.add(new BOAparameter("w", 2.0, "Weight of Hamming Distance in deciding the best bid"));
 		return set;
 	}
 
@@ -141,27 +142,41 @@ public class Group9_OMS extends OMStrategy {
 	}
 	
 	/**
-	 * calculate the Hamming Distance between bid1 and bid2,
+	 * calculate the utility of a bid
+	 * based on evaluation value and Hamming Distance between bid1 and oppBid,
 	 * which is how many different values among all issues between them
 	 * 
 	 * @param bid1
-	 * @param bid2
+	 * @param oppBid
 	 * @param amountOfIssues
+	 * @param evaluation
 	 * @return
 	 */
-	private double calcHammingDist(BidDetails bid1, BidDetails bid2, int amountOfIssues) {
+	private double calcHammingDistUtil(BidDetails bid1, BidDetails oppBid, 
+					int amountOfIssues, double evaluation) {
+		
+		//if no opponent bid given, return the evaluation value
+		if (null == oppBid) {
+			return evaluation;
+		}
 		int diff = 0;
 		
 		//1. calculate how many different values between two bids
 		for (Issue i : model.getOpponentUtilitySpace().getDomain().getIssues()) {
 			Value v1 = bid1.getBid().getValue(i.getNumber());
-			Value v2 = bid2.getBid().getValue(i.getNumber());
+			Value v2 = oppBid.getBid().getValue(i.getNumber());
 			if (!v1.equals(v2)) {
 				diff++;
 			}
 		}
 		
 		//2. normalize HammingDistance
-		return (double)diff / amountOfIssues;
+		double hammingDist =  (double)diff / amountOfIssues;
+		
+		//3. calculate utility
+		double utility = (weightHammingDist * (1 -hammingDist) + evaluation)
+				/ (weightHammingDist + 1);
+		
+		return utility;
 	}
 }
