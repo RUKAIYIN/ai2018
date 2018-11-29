@@ -42,7 +42,7 @@ public class Group9_OM extends OpponentModel {
 	private int learnValueAddition;
 	private int amountOfIssues;
 	private double goldenValue;
-	private int bidsToCheck = 5;
+	private int bidsToCheck;
 
 	@Override
 	public void init(NegotiationSession negotiationSession, Map<String, Double> parameters) {
@@ -55,6 +55,8 @@ public class Group9_OM extends OpponentModel {
 		learnValueAddition = 1;
 		opponentUtilitySpace = (AdditiveUtilitySpace) negotiationSession
 				.getUtilitySpace().copy();
+		bidsToCheck = countMaxIssueValues(opponentUtilitySpace);
+
 		amountOfIssues = opponentUtilitySpace.getDomain().getIssues().size();
 		/*
 		 * This is the value to be added to weights of unchanged issues before
@@ -145,6 +147,17 @@ public class Group9_OM extends OpponentModel {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private int countMaxIssueValues(AdditiveUtilitySpace oppSpace) {
+		int max = 0;
+		for (Issue i : oppSpace.getDomain().getIssues()) {
+			IssueDiscrete id = (IssueDiscrete) i;
+			if (id.getNumberOfValues() > max) {
+				max = id.getNumberOfValues();
+			}
+		}
+		return max;
 	}
 
 	// Get last x bids opponent made
