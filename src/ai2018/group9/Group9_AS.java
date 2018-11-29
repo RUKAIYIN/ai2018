@@ -70,7 +70,7 @@ public class Group9_AS extends AcceptanceStrategy {
 
 		// Accept if our utility is above a or above the square root of time left 
 		//6.10.2018 chancged from taking the root of t to  t to the power of 0.1 to make the decending slower.
-		if (lastOpponentBidUtil >= Math.min(a,Math.pow(timeLeft,0.1))) {
+		if (lastOpponentBidUtil >= Math.min(a,Math.sqrt(timeLeft)+0.35))  {
 			return Actions.Accept;
 		}
 
