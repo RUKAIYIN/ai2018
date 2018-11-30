@@ -27,6 +27,10 @@ import genius.core.utility.EvaluatorDiscrete;
  * 
  * paper: https://ii.tudelft.nl/sites/default/files/boa.pdf
  */
+/**
+ * @author mango
+ *
+ */
 public class Group9_OM extends OpponentModel {
 
 	/*
@@ -98,7 +102,7 @@ public class Group9_OM extends OpponentModel {
 				numberOfUnchanged++;
 				// Issue unchanged, we don't want to increment more
 				addToIssue.put(i, 0.0);
-			} else if(lastDiffSet.get(i) != 0) {
+			} else {
 				// Issue i should be incremented by a value according to num distinct bids in last x bids
 				// Also have time factor since more importance is in the beginning
 				addToIssue.put(i, (1.0 - (double)(distinctBidsPerIssue.get(i))/amountOfIssues)*timeLeft);
@@ -148,7 +152,14 @@ public class Group9_OM extends OpponentModel {
 			ex.printStackTrace();
 		}
 	}
-
+	
+	
+	/**
+	 * Returns the maximum # of values among all issues
+	 * 
+	 * @param oppSpace
+	 * @return
+	 */
 	private int countMaxIssueValues(AdditiveUtilitySpace oppSpace) {
 		int max = 0;
 		for (Issue i : oppSpace.getDomain().getIssues()) {
@@ -160,8 +171,12 @@ public class Group9_OM extends OpponentModel {
 		return max;
 	}
 
-	// Get last x bids opponent made
-	public BidDetails[]  getLastBids(Integer x) {
+	/**
+	 * Get last x bids opponent made
+	 * @param x
+	 * @return
+	 */
+	private BidDetails[]  getLastBids(Integer x) {
 		BidDetails[] bidDetails = new BidDetails[x];
 		int bidSize = negotiationSession.getOpponentBidHistory().size();
 		if(bidSize < x + 1) {
@@ -175,8 +190,12 @@ public class Group9_OM extends OpponentModel {
 		return bidDetails;
 	}
 
-	// Count number of distinct values per issue for each BidDetail
-	public HashMap<Integer, Integer> CountValues(BidDetails[] bidDetails) {
+	/**
+	 * Count number of distinct values per issue for each BidDetail
+	 * @param bidDetails
+	 * @return
+	 */
+	private HashMap<Integer, Integer> CountValues(BidDetails[] bidDetails) {
 
 		HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
 		try {	
@@ -208,6 +227,26 @@ public class Group9_OM extends OpponentModel {
 	@Override
 	public String getName() {
 		return "Group9 Opponent Model";
+	}
+
+	public double getLearnCoef() {
+		return learnCoef;
+	}
+
+	public int getLearnValueAddition() {
+		return learnValueAddition;
+	}
+
+	public int getAmountOfIssues() {
+		return amountOfIssues;
+	}
+
+	public double getGoldenValue() {
+		return goldenValue;
+	}
+
+	public int getBidsToCheck() {
+		return bidsToCheck;
 	}
 
 	@Override
