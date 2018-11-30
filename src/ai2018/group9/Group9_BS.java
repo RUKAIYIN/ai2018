@@ -1,9 +1,11 @@
 package ai2018.group9;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import genius.core.Bid;
 import genius.core.bidding.BidDetails;
 import genius.core.boaframework.BOAparameter;
 import genius.core.boaframework.NegotiationSession;
@@ -12,6 +14,8 @@ import genius.core.boaframework.OMStrategy;
 import genius.core.boaframework.OfferingStrategy;
 import genius.core.boaframework.OpponentModel;
 import genius.core.boaframework.SortedOutcomeSpace;
+import genius.core.uncertainty.UserModel;
+import genius.core.utility.AdditiveUtilitySpace;
 
 public class Group9_BS extends OfferingStrategy {
 
@@ -73,6 +77,39 @@ public class Group9_BS extends OfferingStrategy {
 
 		this.opponentModel = model;
 		this.omStrategy = oms;
+		
+		// under uncertainty
+		if (null != negotiationSession.getUserModel()) {
+			AdditiveUtilitySpace u = initUncertainty(negoSession);
+			
+			// replace the utility space in the negotiation session
+			this.negotiationSession = new NegotiationSession(negoSession.getSessionData(), 
+					u, negoSession.getTimeline(), negoSession.getOutcomeSpace(), 
+					negoSession.getUserModel());
+		}
+	}
+	
+	
+	/**
+	 * Initializes utility space under uncertainty
+	 * 
+	 * @param negoSession
+	 * @return AdditiveUtilitySpace
+	 */
+	private AdditiveUtilitySpace initUncertainty(NegotiationSession negoSession) {
+		Group9_UtilitySpaceFactory factory = new Group9_UtilitySpaceFactory(negoSession.getDomain());
+		
+		// get the parameters from the opponent model if there is one
+		if (opponentModel instanceof Group9_OM) {
+			Group9_OM om = (Group9_OM)opponentModel;
+
+			factory.setLearnCoef(om.getLearnCoef());
+			factory.setLearnValueAddition(om.getLearnValueAddition());
+		}
+		
+		// estimate the utility space
+		factory.estimateUsingBidRanks(negotiationSession.getUserModel().getBidRanking());
+		return factory.getUtilitySpace();
 	}
 
 	@Override
@@ -89,20 +126,53 @@ public class Group9_BS extends OfferingStrategy {
 	@Override
 	public BidDetails determineNextBid() {
 		double time = negotiationSession.getTime();
-		double utilityGoal;
-		utilityGoal = p(time);
+		double[] utilityGoal = new double[1];
+		utilityGoal[0] = p(time);
 
 		// System.out.println("[e=" + e + ", Pmin = " +
 		// BilateralAgent.round2(Pmin) + "] t = " + BilateralAgent.round2(time)
 		// + ". Aiming for " + utilityGoal);
+		
+		do {
+			// if there is no opponent model available
+			if (opponentModel instanceof NoModel) {
+				nextBid = negotiationSession.getOutcomeSpace().getBidNearUtility(utilityGoal[0]);
+			} else {
+				nextBid = omStrategy.getBid(outcomespace, utilityGoal[0]);
+			}
+		} while (!isGoodBidUnderUncertainty(nextBid, utilityGoal) && utilityGoal[0] < 1.0);
 
-		// if there is no opponent model available
-		if (opponentModel instanceof NoModel) {
-			nextBid = negotiationSession.getOutcomeSpace().getBidNearUtility(utilityGoal);
-		} else {
-			nextBid = omStrategy.getBid(outcomespace, utilityGoal);
-		}
+
 		return nextBid;
+	}
+	
+	/**
+	 * @param bid
+	 * @param h
+	 * @return
+	 */
+	private boolean isGoodBidUnderUncertainty(BidDetails bid, double[] h) {
+		
+		// under uncertainty
+		UserModel userModel = negotiationSession.getUserModel();
+		if (null != userModel) {
+			List<Bid> bidOrder = userModel.getBidRanking().getBidOrder();
+			
+			if (bidOrder.contains(bid.getBid())) {
+				double percentile = bidOrder.indexOf(bid.getBid())
+						/ (double) bidOrder.size();					
+				if (percentile < h[0]) {
+					// Increase the utility goal a little bit if bid ranks too low
+					h[0] = (h[0] > 0.99) ? 1 : (h[0] + 0.01);
+					return false;
+				}
+			}
+		} else {
+			//Returns true if not uncertainty
+			return true;
+		}
+
+		return true;
 	}
 
 	/**
@@ -112,7 +182,7 @@ public class Group9_BS extends OfferingStrategy {
 	 * @param t
 	 * @return double
 	 */
-	public double p(double t) {
+	private double p(double t) {
 		if ( t <= 1/n) {
 			//for phase I, we offer bids with increasing utility towards Pmax
 			return Pmin + (Pmax - Pmin) * n * t;
