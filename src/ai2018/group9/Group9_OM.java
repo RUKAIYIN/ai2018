@@ -151,11 +151,19 @@ public class Group9_OM extends OpponentModel {
 
 	private int countMaxIssueValues(AdditiveUtilitySpace oppSpace) {
 		int max = 0;
-		for (Issue i : oppSpace.getDomain().getIssues()) {
-			IssueDiscrete id = (IssueDiscrete) i;
-			if (id.getNumberOfValues() > max) {
-				max = id.getNumberOfValues();
+		try {
+			for (Issue i : oppSpace.getDomain().getIssues()) {
+				IssueDiscrete id = (IssueDiscrete) i;
+				if (id.getNumberOfValues() > max) {
+					max = id.getNumberOfValues();
+				}
 			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		// In case we could not cast issues to issuediscrete, set max to 5
+		if (max == 0) {
+			max = 5;
 		}
 		return max;
 	}
