@@ -14,18 +14,26 @@ import genius.core.issue.IssueDiscrete;
 import genius.core.issue.Objective;
 import genius.core.issue.Value;
 import genius.core.issue.ValueDiscrete;
+import genius.core.uncertainty.AdditiveUtilitySpaceFactory;
 import genius.core.uncertainty.BidRanking;
 import genius.core.utility.AbstractUtilitySpace;
 import genius.core.utility.AdditiveUtilitySpace;
 import genius.core.utility.Evaluator;
 import genius.core.utility.EvaluatorDiscrete;
 
+/**
+ * This class uses similar method in our OM to
+ * estimate the utility space given uncertainty profile 
+ * 
+ * @author Group 9
+ */
 public class Group9_UtilitySpaceFactory{
 	
 	private AdditiveUtilitySpace u;
 	
 	/**
 	 * parameters to estimate utility space under uncertainty
+	 * @see Group9_OM
 	 */
 	private double learnCoef;
 	private int learnValueAddition;
@@ -87,6 +95,12 @@ public class Group9_UtilitySpaceFactory{
 		return max;
 	}
 
+	/**
+	 * Estimates the utility space given bid ranking which contains
+	 * all possible bids from low to high utility
+	 * 
+	 * @param r
+	 */
 	public void estimateUsingBidRanks(BidRanking r) {
 		if (r.getSize() < bidsToCheck) {
 			simpleEstimateUsingBidRanks(r);
@@ -122,24 +136,11 @@ public class Group9_UtilitySpaceFactory{
 					addToIssue.put(j, 0.0);
 				} else {
 					try {
-						// incremented by a value according to # of distinct bids in last x bids
-						addToIssue.put(j, (1.0 - (double)(distinctBidsPerIssue.get(j))/amountOfIssues));
-					} catch (NullPointerException e) {//TODO
-						if (0 == distinctBidsPerIssue.size()) {
-							log("-----empty distinctBidsPerIssue!");
-/*							for (Issue iss : u.getDomain().getIssues()) {
-								for(int counter = 0; counter < lastBids.length; counter++) {
-									Value val = lastBids[counter].getValue(iss.getNumber());
-									log(iss.getNumber() + ",,,,," + val.toString());
-								}
-								//log(i.getNumber() + ", +++++++" + issueSet.size());
-							}*/
-							if (0 == lastBids.length) {
-								log("i="+i+", bidsToCheck="+bidsToCheck);
-							}
-						}
-						/*log(lastDiffSet.size() + ", " + distinctBidsPerIssue.size());
-						log("j = " + j);*/
+						// Incremented by a value according to # of distinct bids in last x bids
+						addToIssue.put(j, 
+								(1.0 - (double)(distinctBidsPerIssue.get(j)) / amountOfIssues));
+					} catch (NullPointerException e) {
+						// Do nothing
 					}
 				}
 			}
@@ -149,7 +150,7 @@ public class Group9_UtilitySpaceFactory{
 			// The maximum possible weight
 			double maximumWeight = 1D - (amountOfIssues) * goldenValue / totalSum;
 			
-			// re-weighing issues while making sure that the sum remains 1
+			// Re-weighing issues while making sure that the sum remains 1
 			for (Integer k : lastDiffSet.keySet()) {
 				Objective issue = u.getDomain().getObjectivesRoot().getObjective(k);
 				double weight = u.getWeight(k);
@@ -183,7 +184,7 @@ public class Group9_UtilitySpaceFactory{
 				ex.printStackTrace();
 			}
 			
-		} //end for bid ranking
+		} //end for loop of bid ranking
 		
 	}
 	
@@ -192,6 +193,8 @@ public class Group9_UtilitySpaceFactory{
 	 * A simple heuristic for estimating a discrete {@link AdditiveUtilitySpace} from a {@link BidRanking}.
 	 * Gives 0 points to all values occurring in the lowest ranked bid, 
 	 * then 1 point to all values occurring in the second lowest bid, and so on.
+	 * 
+	 * @see AdditiveUtilitySpaceFactory
 	 */
 	public void simpleEstimateUsingBidRanks(BidRanking r)
 	{
@@ -211,6 +214,11 @@ public class Group9_UtilitySpaceFactory{
 		normalizeWeightsByMaxValues();
 	}
 	
+	/**
+	 * Normalize issue weights by max values
+	 * 
+	 * @see AdditiveUtilitySpaceFactory
+	 */
 	private void normalizeWeightsByMaxValues()
 	{
 		for (Issue i : getIssues())
@@ -227,7 +235,12 @@ public class Group9_UtilitySpaceFactory{
 	}
 	
 	/**
+	 * @see AdditiveUtilitySpaceFactory
 	 * Sets e_i(v) := value 
+	 * 
+	 * @param i
+	 * @param v
+	 * @param value
 	 */
 	private void setUtility(Issue i, ValueDiscrete v, double value)
 	{
@@ -240,12 +253,22 @@ public class Group9_UtilitySpaceFactory{
 		evaluator.setEvaluationDouble(v, value);
 	}
 	
+	/**
+	 * Get the utility of a issue value
+	 * @param i
+	 * @param v
+	 * @return
+	 */
 	private double getUtility(Issue i, ValueDiscrete v)
 	{
 		EvaluatorDiscrete evaluator = (EvaluatorDiscrete) u.getEvaluator(i);
 		return evaluator.getDoubleValue(v);
 	}
 	
+	/**
+	 * Returns all issues in the domain
+	 * @return List<Issue>
+	 */
 	private List<Issue> getIssues() 
 	{
 		return getDomain().getIssues();
@@ -273,15 +296,9 @@ public class Group9_UtilitySpaceFactory{
 					}
 				}
 				count.put(i.getNumber(), issueSet.size());
-				//log(i.getNumber() + ", +++++++" + issueSet.size());
 			}
-		} catch (Exception ex) {//TODO
-			ex.printStackTrace();
-			//log(u.getDomain().getIssues().size() + ", ------" + bids.length);
-			/*System.out.print("\n");
-			for (Issue i : u.getDomain().getIssues()) {
-				System.out.print(i.getNumber() + ",");
-			}*/
+		} catch (Exception ex) {
+			// Do nothing
 		}
 		
 		return count;
@@ -289,9 +306,10 @@ public class Group9_UtilitySpaceFactory{
 
 	/**
 	 * Get last x bids before base in bid ranking
+	 * 
 	 * @param x
 	 * @param allBids
-	 * @return
+	 * @return Bid[]
 	 */
 	private Bid[] getLastBids(int base, int x, List<Bid> allBids) {
 		int bidSize = allBids.size();
@@ -305,12 +323,8 @@ public class Group9_UtilitySpaceFactory{
 				((counter < x) && (base + counter) <= (allBids.size() - 1)); 
 				counter++) {
 			Bid bid = allBids.get(base + counter);
-			if (null == bid) { //TODO
-				log("bidSize="+bidSize+",base="+base+",counter="+counter+",index="+(base-1-counter));
-			}
 			bids[counter] = bid;
 		}
-		
 		return bids;
 	}
 	
@@ -320,11 +334,9 @@ public class Group9_UtilitySpaceFactory{
 	 * if the value changed. If this is the case, a 1 is stored in a hashmap for
 	 * that issue, else a 0.
 	 * 
-	 * @param a
-	 *            bid of the opponent
-	 * @param another
-	 *            bid
-	 * @return
+	 * @param first
+	 * @param second
+	 * @return HashMap<Integer, Integer>
 	 */
 	private HashMap<Integer, Integer> determineDifference(Bid first,
 			Bid second) {
@@ -359,9 +371,4 @@ public class Group9_UtilitySpaceFactory{
 	public void setLearnValueAddition(int learnValueAddition) {
 		this.learnValueAddition = learnValueAddition;
 	}
-	
-	private void log(String s) {
-		System.out.println(s);
-	}
-
 }

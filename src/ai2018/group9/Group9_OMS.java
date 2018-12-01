@@ -19,15 +19,15 @@ import genius.core.issue.Value;
  * while taking the opponent's preferences into account. The opponent model is
  * used to select the best bid.
  * 
+ * @author Group 9
  */
 public class Group9_OMS extends OMStrategy {
 
 	/**
-	 * when to stop updating the opponentmodel. Note that this value is not
+	 * when to stop updating the opponent model. Note that this value is not
 	 * exactly one as a match sometimes lasts slightly longer.
 	 */
 	double updateThreshold;
-	
 	
 	/**
 	 * weight of Hamming Distance
@@ -36,7 +36,7 @@ public class Group9_OMS extends OMStrategy {
 	double weightHammingDist;
 
 	/**
-	 * Initializes the opponent model strategy. If a value for the parameter t
+	 * Initializes the opponent model strategy. If a value for a parameter
 	 * is given, then it is set to this value. Otherwise, the default value is
 	 * used.
 	 * 
@@ -49,7 +49,8 @@ public class Group9_OMS extends OMStrategy {
 	 *            set of parameters for this opponent model strategy.
 	 */
 	@Override
-	public void init(NegotiationSession negotiationSession, OpponentModel model, Map<String, Double> parameters) {
+	public void init(NegotiationSession negotiationSession, 
+			OpponentModel model, Map<String, Double> parameters) {
 		super.init(negotiationSession, model, parameters);
 		if (null != parameters.get("t")) {
 			updateThreshold = parameters.get("t").doubleValue();
@@ -68,17 +69,22 @@ public class Group9_OMS extends OMStrategy {
 	 * Returns the best bid with lower Hamming distance and higher evaluation
 	 * for the opponent given a set of similarly preferred bids.
 	 * 
-	 * @param list
-	 *            of the bids considered for offering.
+	 * @param allBids
+	 *            list of the bids considered for offering.
 	 * @return bid to be offered to opponent.
 	 */
 	@Override
 	public BidDetails getBid(List<BidDetails> allBids) {
+		
+		if (null == allBids || 0 == allBids.size()) {
+			return null;
+		}
 
 		// 1. If there is only a single bid, return this bid
 		if (allBids.size() == 1) {
 			return allBids.get(0);
 		}
+		
 		double bestUtil = -1;
 		BidDetails bestBid = allBids.get(0);
 		
@@ -138,7 +144,7 @@ public class Group9_OMS extends OMStrategy {
 
 	@Override
 	public String getName() {
-		return "Group 9 OMS BestBid";
+		return "Group 9 Opponent Model Strategy";
 	}
 	
 	/**
@@ -150,18 +156,20 @@ public class Group9_OMS extends OMStrategy {
 	 * @param oppBid
 	 * @param amountOfIssues
 	 * @param evaluation
+	 * 			bid evaluation
 	 * @return
 	 */
 	private double calcHammingDistUtil(BidDetails bid1, BidDetails oppBid, 
 					int amountOfIssues, double evaluation) {
 		
-		//if no opponent bid given, return the evaluation value
+		// If no opponent bid given, return the evaluation value
 		if (null == oppBid) {
 			return evaluation;
 		}
+		
 		int diff = 0;
 		
-		//1. calculate how many different values between two bids
+		// 1. calculate how many different values between two bids
 		for (Issue i : model.getOpponentUtilitySpace().getDomain().getIssues()) {
 			Value v1 = bid1.getBid().getValue(i.getNumber());
 			Value v2 = oppBid.getBid().getValue(i.getNumber());
@@ -170,10 +178,10 @@ public class Group9_OMS extends OMStrategy {
 			}
 		}
 		
-		//2. normalize HammingDistance
+		// 2. normalize HammingDistance
 		double hammingDist =  (double)diff / amountOfIssues;
 		
-		//3. calculate utility
+		// 3. calculate utility
 		double utility = (weightHammingDist * (1 -hammingDist) + evaluation)
 				/ (weightHammingDist + 1);
 		

@@ -21,14 +21,13 @@ import genius.core.utility.Evaluator;
 import genius.core.utility.EvaluatorDiscrete;
 
 /**
- * BOA framework implementation of the HardHeaded Frequecy Model.
+ * Opponent Model of BOAFramework <br><br>
+ * 
+ * Implemented by using improved HardHeaded Frequency Model. <br>
  * 
  * Default: learning coef l = 0.2; learnValueAddition v = 1.0
  * 
- * paper: https://ii.tudelft.nl/sites/default/files/boa.pdf
- */
-/**
- * @author mango
+ * @author Group 9
  *
  */
 public class Group9_OM extends OpponentModel {
@@ -59,6 +58,9 @@ public class Group9_OM extends OpponentModel {
 		learnValueAddition = 1;
 		opponentUtilitySpace = (AdditiveUtilitySpace) negotiationSession
 				.getUtilitySpace().copy();
+		
+		// On estimating a bid's utility, we look back at x bids,
+		// which is the maximum number of values among all issues
 		bidsToCheck = countMaxIssueValues(opponentUtilitySpace);
 
 		amountOfIssues = opponentUtilitySpace.getDomain().getIssues().size();
@@ -70,7 +72,6 @@ public class Group9_OM extends OpponentModel {
 		goldenValue = learnCoef / amountOfIssues;
 
 		initializeModel();
-
 	}
 
 	@Override
@@ -109,7 +110,7 @@ public class Group9_OM extends OpponentModel {
 			}
 		}
 
-		//Put more importance on the changes in the beginning, so multiply with timeleft
+		// Put more importance on the changes in the beginning, so multiply with timeleft
 		double addValue = goldenValue*timeLeft;
 
 		// The total sum of weights before normalization.
@@ -117,7 +118,7 @@ public class Group9_OM extends OpponentModel {
 		// The maximum possible weight
 		double maximumWeight = 1D - (amountOfIssues) * addValue / totalSum;
 
-		// re-weighing issues while making sure that the sum remains 1
+		// Re-weighing issues while making sure that the sum remains 1
 		for (Integer i : lastDiffSet.keySet()) {
 			Objective issue = opponentUtilitySpace.getDomain()
 					.getObjectivesRoot().getObjective(i);
@@ -158,7 +159,7 @@ public class Group9_OM extends OpponentModel {
 	 * Returns the maximum # of values among all issues
 	 * 
 	 * @param oppSpace
-	 * @return
+	 * @return int
 	 */
 	private int countMaxIssueValues(AdditiveUtilitySpace oppSpace) {
 		int max = 0;
@@ -172,7 +173,7 @@ public class Group9_OM extends OpponentModel {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		// In case we could not cast issues to issuediscrete, set max to 5
+		// In case we could not cast issues to issue discrete, set max to 5
 		if (max == 0) {
 			max = 5;
 		}
@@ -200,12 +201,14 @@ public class Group9_OM extends OpponentModel {
 
 	/**
 	 * Count number of distinct values per issue for each BidDetail
+	 * 
 	 * @param bidDetails
 	 * @return
 	 */
 	private HashMap<Integer, Integer> CountValues(BidDetails[] bidDetails) {
-
+		
 		HashMap<Integer, Integer> count = new HashMap<Integer, Integer>();
+		
 		try {	
 			for (Issue i : opponentUtilitySpace.getDomain().getIssues()) {
 				Set<String> issueSet = new HashSet<String>();
@@ -232,11 +235,6 @@ public class Group9_OM extends OpponentModel {
 		return result;
 	}
 
-	@Override
-	public String getName() {
-		return "Group9 Opponent Model";
-	}
-
 	public double getLearnCoef() {
 		return learnCoef;
 	}
@@ -255,14 +253,6 @@ public class Group9_OM extends OpponentModel {
 
 	public int getBidsToCheck() {
 		return bidsToCheck;
-	}
-
-	@Override
-	public Set<BOAparameter> getParameterSpec() {
-		Set<BOAparameter> set = new HashSet<BOAparameter>();
-		set.add(new BOAparameter("l", 0.2,
-				"The learning coefficient determines how quickly the issue weights are learned"));
-		return set;
 	}
 
 	/**
@@ -293,11 +283,10 @@ public class Group9_OM extends OpponentModel {
 	 * if the value changed. If this is the case, a 1 is stored in a hashmap for
 	 * that issue, else a 0.
 	 * 
-	 * @param a
-	 *            bid of the opponent
-	 * @param another
-	 *            bid
-	 * @return
+	 * @param first
+	 * @param second
+	 * 
+	 * @return HashMap<Integer, Integer>
 	 */
 	private HashMap<Integer, Integer> determineDifference(BidDetails first,
 			BidDetails second) {
@@ -314,6 +303,19 @@ public class Group9_OM extends OpponentModel {
 		}
 
 		return diff;
+	}
+
+	@Override
+	public Set<BOAparameter> getParameterSpec() {
+		Set<BOAparameter> set = new HashSet<BOAparameter>();
+		set.add(new BOAparameter("l", 0.2,
+				"The learning coefficient determines how quickly the issue weights are learned"));
+		return set;
+	}
+	
+	@Override
+	public String getName() {
+		return "Group9 Opponent Model";
 	}
 
 }

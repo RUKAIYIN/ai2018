@@ -15,6 +15,8 @@ import genius.core.boaframework.OpponentModel;
 import genius.core.utility.AdditiveUtilitySpace;
 
 /**
+ * Acceptance Strategy of BOAFramework <br>
+ * 
  * Accepts:
  * <ul>
  * <li>if we have uncertainty profile, and we receive an offer in our highest
@@ -28,11 +30,14 @@ import genius.core.utility.AdditiveUtilitySpace;
  */
 public class Group9_AS extends AcceptanceStrategy {
 	
-	private double a; //a user-defined constant which is our utilityThreshold
+	/**
+	 * a user-defined constant as one of the parameters
+	 * in the function of acceptance threshold
+	 */
+	private double a;
 	
 	/**
 	 * our general Accept Strategy
-	 * 
 	 */
 	private static String ACCEPT_STRATEGY = "Accept if our utility is above a "
 			+ "or above the square root of time left + 0.35";
@@ -80,9 +85,10 @@ public class Group9_AS extends AcceptanceStrategy {
 		
 		// under uncertainty
 		if (null != negotiationSession.getUserModel()) {
+			// 1. estimated utility space
 			AdditiveUtilitySpace u = initUncertainty(negoSession);
 			
-			// replace the utility space in the original negotiation session
+			// 2. replace the utility space in negotiation session
 			this.negotiationSession = new NegotiationSession(negoSession.getSessionData(), 
 					u, negoSession.getTimeline(), negoSession.getOutcomeSpace(), 
 					negoSession.getUserModel());
@@ -90,7 +96,7 @@ public class Group9_AS extends AcceptanceStrategy {
 	}
 	
 	/**
-	 * Initializes utility space under uncertainty
+	 * Initializes and estimates utility space under uncertainty
 	 * 
 	 * @param negoSession
 	 * @return AdditiveUtilitySpace
@@ -98,7 +104,8 @@ public class Group9_AS extends AcceptanceStrategy {
 	private AdditiveUtilitySpace initUncertainty(NegotiationSession negoSession) {
 		Group9_UtilitySpaceFactory factory = new Group9_UtilitySpaceFactory(negoSession.getDomain());
 		
-		// get the parameters from the opponent model if there is one
+		// since we use similar strategy to that of Opponent Model
+		// get the parameters from OM if possible
 		if (opponentModel instanceof Group9_OM) {
 			Group9_OM om = (Group9_OM)opponentModel;
 
@@ -129,23 +136,26 @@ public class Group9_AS extends AcceptanceStrategy {
 		double timeLeft = 1 - negotiationSession.getTime(); //ranges [0, 1]
 		
 		// Accept if our utility is above a or above the square root of time left + 0.35
-		// Pls update ACCEPT_STRATEGY as well if updates are made here
-		double acceptThreshold = Math.min(a,Math.sqrt(timeLeft)+0.35);
+		
+		// Define the acceptThreshold as a function of time and a
+		double acceptThreshold = Math.min(a, Math.sqrt(timeLeft) + 0.35);
 		
 		double lastOpponentBidUtil = negotiationSession.getOpponentBidHistory()
 				.getLastBidDetails().getMyUndiscountedUtil();
 		
-		// Accept if the utility is higher than the calculated accept threshold
+		// Accept if the utility is higher than the calculated acceptThreshold
 		if (lastOpponentBidUtil >= acceptThreshold) {
 			
 			// Under uncertainty
+			// Apply ranking rule to make sure we accept a high-utility bid
 			if (null != negotiationSession.getUserModel()) {
-
-				List<Bid> bidOrder = negotiationSession.getUserModel().getBidRanking().getBidOrder();
+				List<Bid> bidOrder = 
+						negotiationSession.getUserModel().getBidRanking().getBidOrder();
+				
 				if (bidOrder.contains(receivedBid)) {
 					double percentile = bidOrder.indexOf(receivedBid)
 							/ (double) bidOrder.size();
-					// Reject if the bid ranks lower than out threshold
+					// Reject if the bid ranks lower than acceptThreshold
 					if (percentile < acceptThreshold) {
 						return Actions.Reject;
 					}

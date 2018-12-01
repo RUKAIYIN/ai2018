@@ -16,30 +16,58 @@ import genius.core.boaframework.OpponentModel;
 import genius.core.boaframework.SortedOutcomeSpace;
 import genius.core.uncertainty.UserModel;
 import genius.core.utility.AdditiveUtilitySpace;
-
+/**
+ * Bidding Strategy of BOAFramework <br><br>
+ * 
+ * Divide the time into two phase, for each phase we offer different bids
+ * <ul>
+ * <li>Phase I: offer bids with increasing utilities.
+ * <li>Phase II: offer bids with decreasing utilities.
+ * </ul>
+ * 
+ * @author Group 9
+ */
 public class Group9_BS extends OfferingStrategy {
 
-	/** Minimum target utility */
+	/**
+	 * Minimum target utility
+	 */
 	private double Pmin;
 	
+	/**
+	 * Minimum target utility
+	 * Usually = 1
+	 */
 	private double Pmax;
-	/** Minimum target utility */
 	
-	/** Concession factor, the exponent */
+	/**
+	 * Concession factor, the exponent
+	 */
 	private double e;
 	
 	/** 
 	 * We divide the whole time t into two phase
-	 * Phase I [0, t/n]: offer bids with increasing utility
-	 * Phase II (t/n, 1]: offer bids with decreasing utility
+	 * Phase I [0, t/n]: offer bids with increasing utilities
+	 * Phase II (t/n, 1]: offer bids with decreasing utilities
 	 */
 	private double n;
 	
-	/** Outcome space */
 	private SortedOutcomeSpace outcomespace;
 
 	/**
 	 * Method which initializes the agent by setting all parameters.
+	 * If a value for a parameter is given, then it is set to this value.
+	 * Otherwise, the default value is used.
+	 * 
+	 * @param negoSession
+	 *            state of the negotiation.
+	 * @param model
+	 *            opponent model used in conjunction with this opponent modeling
+	 *            strategy.
+	 * @param oms
+	 * 			  opponent model strategy
+	 * @param parameters
+	 *            set of parameters for this opponent model strategy.
 	 */
 	@Override
 	public void init(NegotiationSession negoSession, OpponentModel model, OMStrategy oms,
@@ -80,9 +108,10 @@ public class Group9_BS extends OfferingStrategy {
 		
 		// under uncertainty
 		if (null != negotiationSession.getUserModel()) {
+			// 1. estimated utility space
 			AdditiveUtilitySpace u = initUncertainty(negoSession);
-			
-			// replace the utility space in the negotiation session
+
+			// 2. replace the utility space in negotiation session
 			this.negotiationSession = new NegotiationSession(negoSession.getSessionData(), 
 					u, negoSession.getTimeline(), negoSession.getOutcomeSpace(), 
 					negoSession.getUserModel());
@@ -91,14 +120,15 @@ public class Group9_BS extends OfferingStrategy {
 	
 	
 	/**
-	 * Initializes utility space under uncertainty
+	 * Initializes and estimates utility space under uncertainty
 	 * 
 	 * @param negoSession
 	 * @return AdditiveUtilitySpace
 	 */
 	private AdditiveUtilitySpace initUncertainty(NegotiationSession negoSession) {
 		Group9_UtilitySpaceFactory factory = new Group9_UtilitySpaceFactory(negoSession.getDomain());
-		
+
+		// since we use similar strategy to that of Opponent Model
 		// get the parameters from the opponent model if there is one
 		if (opponentModel instanceof Group9_OM) {
 			Group9_OM om = (Group9_OM)opponentModel;
@@ -128,10 +158,6 @@ public class Group9_BS extends OfferingStrategy {
 		double time = negotiationSession.getTime();
 		double[] utilityGoal = new double[1];
 		utilityGoal[0] = p(time);
-
-		// System.out.println("[e=" + e + ", Pmin = " +
-		// BilateralAgent.round2(Pmin) + "] t = " + BilateralAgent.round2(time)
-		// + ". Aiming for " + utilityGoal);
 		
 		do {
 			// if there is no opponent model available
@@ -140,6 +166,8 @@ public class Group9_BS extends OfferingStrategy {
 			} else {
 				nextBid = omStrategy.getBid(outcomespace, utilityGoal[0]);
 			}
+			// under uncertainty, if the bid isn't good, 
+			// increase the utility goal and keep searching
 		} while (!isGoodBidUnderUncertainty(nextBid, utilityGoal) && utilityGoal[0] < 1.0);
 
 
@@ -147,20 +175,24 @@ public class Group9_BS extends OfferingStrategy {
 	}
 	
 	/**
+	 * Determine if the bid is good to offer under uncertainty
+	 * by checking whether the bid rank satisfies the utility goal
+	 * 
 	 * @param bid
 	 * @param h
-	 * @return
+	 * @return boolean
 	 */
 	private boolean isGoodBidUnderUncertainty(BidDetails bid, double[] h) {
 		
-		// under uncertainty
+		// Under uncertainty
 		UserModel userModel = negotiationSession.getUserModel();
 		if (null != userModel) {
 			List<Bid> bidOrder = userModel.getBidRanking().getBidOrder();
 			
 			if (bidOrder.contains(bid.getBid())) {
 				double percentile = bidOrder.indexOf(bid.getBid())
-						/ (double) bidOrder.size();					
+						/ (double) bidOrder.size();
+				// Not a good bid if it ranks lower than the utility goal
 				if (percentile < h[0]) {
 					// Increase the utility goal a little bit if bid ranks too low
 					h[0] = (h[0] > 0.99) ? 1 : (h[0] + 0.01);
@@ -168,7 +200,7 @@ public class Group9_BS extends OfferingStrategy {
 				}
 			}
 		} else {
-			//Returns true if not uncertainty
+			//Returns true if not under uncertainty
 			return true;
 		}
 
@@ -176,18 +208,20 @@ public class Group9_BS extends OfferingStrategy {
 	}
 
 	/**
-	 * Makes sure the target utility with in the acceptable range according to
-	 * the domain Goes from Pmax to Pmin
+	 * Calculate the utility goal for next bid.
+	 * 
+	 * Makes sure the target utility within the acceptable range according to
+	 * the domain, range in [Pmin, Pmax]
 	 * 
 	 * @param t
 	 * @return double
 	 */
 	private double p(double t) {
 		if ( t <= 1/n) {
-			//for phase I, we offer bids with increasing utility towards Pmax
+			//phase I, offer bids with linearly increasing utilities towards Pmax
 			return Pmin + (Pmax - Pmin) * n * t;
 		} else {
-			//for phase II, we offer bids with decreasing utility towards Pmin
+			//phase II, offer bids with non-linearly decreasing utilities towards Pmin
 			return Pmax - (Pmax - Pmin) * Math.pow(t, e);
 		}
 	}
