@@ -40,7 +40,7 @@ def update_moves(agent, opponent):
     if abs(u1_diff) < thresh:
       if abs(u2_diff) < thresh:
         agent['moves']['silent'] += 1
-      elif u2_diff > thresh:
+      else :
         agent['moves']['nice'] += 1
     elif u1_diff >= thresh:
       if u2_diff >= 0:
@@ -52,9 +52,16 @@ def update_moves(agent, opponent):
         agent['moves']['concession'] += 1
       else:
         agent['moves']['unfortunate'] += 1
-
     last_u1 = u1
     last_u2 = u2
+    
+  number_of_bids =len(agent['bids'])-1
+  agent['moves']['silent'] = agent['moves']['silent']/number_of_bids
+  agent['moves']['nice'] = agent['moves']['nice']/number_of_bids
+  agent['moves']['fortunate'] = agent['moves']['fortunate']/number_of_bids
+  agent['moves']['selfish'] = agent['moves']['selfish']/number_of_bids
+  agent['moves']['concession'] = agent['moves']['concession']/number_of_bids
+  agent['moves']['unfortunate'] = agent['moves']['unfortunate']/number_of_bids
 
 def calc_session(session):
   session_id = ''.join([i for i in session['id'] if not i.isdigit()])
