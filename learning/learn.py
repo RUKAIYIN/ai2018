@@ -1,23 +1,27 @@
 import json
 import os
 from pprint import pprint
+from collections import Counter
 
 training_dir = '../training_logs'
 parties = {'conceder': [], 'random': [], 'hardheaded': [], 'tft': []}
 thresh = 0.005
 
+def init_moves():
+  return {
+    'fortunate': 0,
+    'selfish': 0,
+    'concession': 0,
+    'unfortunate': 0,
+    'nice': 0,
+    'silent': 0
+  }
+
 def init_agent(name, prefs):
   return {
     'name': name,
     'prefs': prefs,
-    'moves': {
-      'fortunate': 0,
-      'selfish': 0,
-      'concession': 0,
-      'unfortunate': 0,
-      'nice': 0,
-      'silent': 0
-    },
+    'moves': init_moves(),
     'bids': [],
   }
 
@@ -68,9 +72,6 @@ def calc_session(session):
   session_data = session['data']
   agent1_name, agent2_name = session_id.split('_')
 
-  print('')
-  print('Session: ' + session_id)
-
   agent1 = init_agent(agent1_name, session_data['Utility1'])
   agent2 = init_agent(agent2_name, session_data['Utility2'])
   agent1['bids'] = [x['agent1'] for x in session_data['bids'] if 'agent1' in x]
@@ -79,13 +80,8 @@ def calc_session(session):
   update_moves(agent1, agent2)
   update_moves(agent2, agent1)
 
-  del agent1['bids']
-  del agent1['prefs']
-  del agent2['bids']
-  del agent2['prefs']
-
-  pprint(agent1)
-  pprint(agent2)
+  parties[agent1['name']].append(agent1['moves'])
+  parties[agent2['name']].append(agent2['moves'])
 
 def get_bid_util(agent_util, bid):
   u = 0
@@ -104,3 +100,11 @@ if __name__ == "__main__":
     sessions = read_json_files()
     for session in sessions:
       calc_session(session)
+    for agent in parties:
+      tmp_moves = {}
+      for moves in parties[agent]:
+        tmp_moves = Counter(tmp_moves) + Counter(moves)
+      avg_moves = init_moves()
+      avg_moves.update(tmp_moves)
+      parties[agent] = {k: v/len(parties[agent]) for k,v in avg_moves.items()}
+    pprint(parties)
