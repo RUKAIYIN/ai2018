@@ -218,8 +218,13 @@ class Hmm(AbstractHmm):
                 if abs(u1_diff) < thresh:
                     if abs(u2_diff) < thresh:
                         agent['moves']['silent'] += 1
-                    else :
+                    elif u2_diff > 0:
                         agent['moves']['nice'] += 1
+                    else:
+                        if u1_diff >= 0:
+                            agent['moves']['selfish'] += 1
+                        else:
+                            agent['moves']['unfortunate'] += 1
                 elif u1_diff >= thresh:
                     if u2_diff >= 0:
                         agent['moves']['fortunate'] += 1
@@ -349,8 +354,13 @@ class Hmm(AbstractHmm):
             if abs(u1_diff) < thresh:
                 if abs(u2_diff) < thresh:
                     return 'silent'
-                else :
+                elif u2_diff > 0:
                     return 'nice'
+                else:
+                    if u1_diff >= 0:
+                        return 'selfish'
+                    else:
+                        return 'unfortunate'
             elif u1_diff >= thresh:
                 if u2_diff >= 0:
                     return 'fortunate'

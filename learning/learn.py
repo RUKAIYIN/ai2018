@@ -44,8 +44,13 @@ def update_moves(agent, opponent):
     if abs(u1_diff) < thresh:
       if abs(u2_diff) < thresh:
         agent['moves']['silent'] += 1
-      else :
+      elif u2_diff > 0:
         agent['moves']['nice'] += 1
+      else:
+        if u1_diff >= 0:
+            agent['moves']['selfish'] += 1
+        else:
+            agent['moves']['unfortunate'] += 1
     elif u1_diff >= thresh:
       if u2_diff >= 0:
         agent['moves']['fortunate'] += 1
@@ -98,8 +103,10 @@ def get_bid_util(agent_util, bid):
 '''
 if __name__ == "__main__":
     sessions = read_json_files()
+    
     for session in sessions:
       calc_session(session)
+    
     for agent in parties:
       tmp_moves = {}
       for moves in parties[agent]:
@@ -107,4 +114,5 @@ if __name__ == "__main__":
       avg_moves = init_moves()
       avg_moves.update(tmp_moves)
       parties[agent] = {k: v/len(parties[agent]) for k,v in avg_moves.items()}
+    
     pprint(parties)
