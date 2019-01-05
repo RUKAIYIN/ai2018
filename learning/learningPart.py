@@ -9,7 +9,7 @@ from collections import Counter
 
 ''' Learn a model through training logs with a simple counting method and update the observation matrix '''
 
-training_dir = '../training_logs'
+training_dir = sys.argv[1]
 parties = {'conceder': [], 'random': [], 'hardheaded': [], 'tft': []}
 thresh = 0.005
 
@@ -115,5 +115,5 @@ for agent in parties:
     avg_moves.update(tmp_moves)
     parties[agent] = {k: v/len(parties[agent]) for k,v in avg_moves.items()}
 #pprint(parties)
-print(parties)
+#print(parties)
 np.save('obsMatrixTmp.npy',parties)
