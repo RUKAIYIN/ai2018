@@ -90,11 +90,7 @@ class AbstractHmm:
 class Hmm(AbstractHmm):
     
     def __init__(self):  #, initStates, possibleObservations, transitionMatrix):
-        ''' initStates is a dictionnary with {'state1':prob, 'state2':prob}
-            possibleObservations is a list with the name of the possible
-                            observations ['observation1','observation2']
-            Transition matrix
-            TO REDO BECAUSE BULLSHIT
+        ''' Initialize everything.
         '''
         
         # Tell if the model has been trained or not
